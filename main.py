@@ -50,7 +50,7 @@ map1 = Map(-12)
 FPS = 60  # 60 Frames Per Second for the game update cycle
 fpsClock = pygame.time.Clock()  # used to lock the game to 60 FPS
 screen = pygame.display.set_mode((1280, 720))  # initialize the game window
-world = pygame.Surface((3000,3000))
+world = pygame.Surface((4000,4000))
 best =0
 def clear_screen():
     pygame.draw.rect(world, (0, 0, 0), (0, 0, 3000, 3000))

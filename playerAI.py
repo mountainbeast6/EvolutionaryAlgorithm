@@ -81,7 +81,7 @@ class PlayerAI:
         self.player.set_map(map)
     def randomChange(self):
         for i in range(200):
-            choice = random.randint(1, 100)
+            choice = random.randint(1, 120)
             if choice==1:
                 self.dna[i]=0
             if choice==2:
@@ -101,5 +101,16 @@ class PlayerAI:
                     self.dna.append(2)
                 if choice2 == 4:
                     self.dna.append(3)
+            if choice == 6:
+                del self.dna[199]
+                choice2 = random.randint(1, 4)
+                if choice2 == 1:
+                    self.dna.insert(i,0)
+                if choice2 == 2:
+                    self.dna.insert(i,1)
+                if choice2 == 3:
+                    self.dna.insert(i,2)
+                if choice2 == 4:
+                    self.dna.insert(i,3)
     def handle_key_presses(self):
         return None
