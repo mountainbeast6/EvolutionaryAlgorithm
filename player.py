@@ -23,7 +23,6 @@ class Player:
     def handle_key_presses(self):
         if pygame.key.get_pressed()[pygame.K_SPACE] and self.isJumping <= 12:
             self.velocity-=1.5
-            print("works")
             self.isJumping += 2
         if pygame.key.get_pressed()[pygame.K_a] and self.x_velocity.__abs__() <= 10:
             self.x_velocity -= 2;
@@ -31,50 +30,50 @@ class Player:
             self.x_velocity += 2;
 
     def act(self):
-        oldx = self.x
-        oldy = self.y
-        self.handle_key_presses()
-        self.velocity -= self.map.get_gravity()
-        self.y += self.velocity
-        self.x += self.x_velocity
-        if self.x_velocity < 0:
-            self.x_velocity += 0.5
-        if self.x_velocity > 0:
-            self.x_velocity -= 0.5
-        if self.where_map_collision()== "bottom":
-            self.y = oldy
-            if self.velocity < 0.1:
-                self.velocity = 0
-            else:
-                self.velocity *= -1 / 2
-            self.isJumping = 0
-        if self.where_map_collision()== "top":
-            self.y = oldy
-            if self.velocity < 0.1:
-                self.velocity = 0
-            else:
-                self.velocity *= -1 / 2
-        if self.where_map_collision() == "left" or self.where_map_collision() == "right":
-            self.x=oldx
-            self.x_velocity=0
-            if self.velocity<0:
-                self.isJumping = 2
+        if self.y<1000:
+            oldx = self.x
+            oldy = self.y
+            self.handle_key_presses()
+            self.velocity -= self.map.get_gravity()
+            self.y += self.velocity
+            self.x += self.x_velocity
+            if self.x_velocity < 0:
+                self.x_velocity += 0.2
+            if self.x_velocity > 0:
+                self.x_velocity -= 0.2
+            if self.where_map_collision()== "bottom":
+                self.y = oldy
+                if self.velocity < 0.1:
+                    self.velocity = 0
+                else:
+                    self.velocity *= -1 / 2
+                self.isJumping = 0
+            if self.where_map_collision()== "top":
+                self.y = oldy
+                if self.velocity < 0.1:
+                    self.velocity = 0
+                else:
+                    self.velocity *= -1 / 2
+            if self.where_map_collision() == "left" or self.where_map_collision() == "right":
+                self.x=oldx
+                self.x_velocity=0
+                if self.velocity<0:
+                    self.isJumping = 2
         return (self.x, self.y)
 
 
     def jump(self):
         if self.isJumping <= 12:
             self.velocity -= 6
-            print("works")
-            self.isJumping += 2
+            self.isJumping+=2
 
     def mvr(self):
-        if self.x_velocity.__abs__() <= 10:
-            self.x_velocity -= 2;
+        if self.x_velocity.__abs__() <= 12:
+            self.x_velocity -= 4;
 
     def mvl(self):
-        if self.x_velocity.__abs__() <= 10:
-            self.x_velocity += 2;
+        if self.x_velocity.__abs__() <= 12:
+            self.x_velocity += 4;
 
     def is_map_collision(self):
         plat = self.map.get_hit_boxes()
@@ -188,4 +187,3 @@ class coin:
         return pygame.Rect(self.x, self.y, 30, 30)
     def draw(self, screen):
         pygame.draw.rect(screen, (255,255,0, 10), self.get_rect())
-
