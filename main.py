@@ -32,7 +32,8 @@ def quicksort(array):
     return quicksort(low) + same + quicksort(high)
 # start the pygame engine
 pygame.init()
-
+camera_pos = (500,500)
+circle_off =(500,500)
 # start the pygame font engine
 pygame.font.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 23)  # load a font for use
@@ -53,7 +54,7 @@ screen = pygame.display.set_mode((1280, 720))  # initialize the game window
 world = pygame.Surface((4000,4000))
 best =0
 def clear_screen():
-    pygame.draw.rect(world, (0, 0, 0), (0, 0, 12000, 12000))
+    pygame.draw.rect(world, (0, 0, 90), (0, 0, 12000, 12000))
 
 def makeRandomAI():
     players=[]
@@ -82,24 +83,52 @@ def breedAI(stupid):
     for i in range(150):
         stupid[i].reset()
     return stupid
-
+color=(0,0,0)
 def draw_mouse_coords(leader):
     textSurface = myfont.render("generation: "+ str(gen)+" best all: "+ str(best)+" best right now: "+str(leader), True, (255,255,255))
     world.blit(textSurface, (50, 70))
 def create_map_1():
-    map1.add(Platform(400, 530, 30, 400, (145, 105, 200)))
-    map1.add(Platform(400, 940, 400, 30, (145, 105, 200)))
-    map1.add(Platform(480, 670, 400, 30, (145, 105, 200)))
-    map1.add(Platform(900, 870, 400, 30, (145, 105, 200)))
-    map1.add(Platform(1300, 400, 30, 400, (145, 105, 200)))
-    map1.add(Platform(1330, 400, 270, 30, (145, 105, 200)))
-    map1.add(Platform(1800, 200, 800, 30, (145, 105, 200)))
-    map1.add(Platform(2399, 700, 800, 30, (145, 105, 200)))
-    map1.addc(coin(200, 500))
+    map1.add(Platform(400, 530, 30, 400, color))
+    map1.add(Platform(400, 940, 400, 30, color))
+    map1.add(Platform(480, 670, 400, 30, color))
+    map1.add(Platform(900, 870, 400, 30, color))
+    map1.add(Platform(1300, 400, 30, 400, color))
+    map1.add(Platform(1330, 400, 270, 30, color))
+    map1.add(Platform(1800, 200, 800, 30, color))
+    map1.add(Platform(2399, 700, 800, 30, color))
+    map1.addc(coin(800, 600))
+    map1.addc(coin(600, 600))
+    map1.addc(coin(800, 900))
+    map1.addc(coin(900, 600))
+    map1.addc(coin(500, 900))
+    map1.addc(coin(875, 900))
+    map1.addc(coin(900, 600))
+    map1.addc(coin(900, 700))
+
+    map1.addc(coin(1000, 600))
+    map1.addc(coin(1100, 400))
+    map1.addc(coin(1500, 200))
+    map1.addc(coin(400, 400))
+    map1.addc(coin(1250, 750))
+    map1.addc(coin(1000, 700))
+    map1.addc(coin(600, 800))
+    map1.addc(coin(1250, 500))
+    map1.addc(coin(1350, 350))
+
 
     map1.set_gravity(-0.7)
 
 create_map_1()
+def update_camera():
+    global camera_pos
+    if pygame.key.get_pressed()[pygame.K_RIGHT]:
+        camera_pos = (camera_pos[0]+10, camera_pos[1])
+    if pygame.key.get_pressed()[pygame.K_LEFT]:
+        camera_pos = (camera_pos[0]-10, camera_pos[1])
+    if pygame.key.get_pressed()[pygame.K_UP]:
+        camera_pos = (camera_pos[0], camera_pos[1]-10)
+    if pygame.key.get_pressed()[pygame.K_DOWN]:
+        camera_pos = (camera_pos[0], camera_pos[1]+10)
 
 # main while loop
 while not simOver:
@@ -116,25 +145,33 @@ while not simOver:
     y_offset = 0
     greatestnum=0
     greatestind=0
+    update_camera()
     for i in range(300):
-        if players[i].x>greatestnum:
+        if len(players[i].coins) >greatestnum:
             greatestind=i
-            greatestnum=players[i].x
+            greatestnum=len(players[i].coins)
     for p in players:
         p.draw(world)
         p.act()
-    if players[0].currentAllele==20:
+    if players[0].currentAllele==200:
         players=breedAI(players)
         gen+=1
         if best<greatestnum:
             best=greatestnum
     textSurface = myfont.render("generation: "+ str(gen)+" best all: "+ str(round(best))+" best right now: "+str(round(greatestnum)), True, (255,255,255))
-    world.blit(textSurface, (50+greatestnum, players[greatestind].y-300))
-    x_offset = 640-greatestnum
-    y_offset = 350-players[greatestind].y
+
+
+
+    x_offset = 640 - camera_pos[0]
+    y_offset = 350 - camera_pos[1]
     camera_offset = (x_offset, y_offset)
+    world.blit(textSurface, (50 - x_offset, 300-y_offset))
+    cx_offset = players[greatestind].x
+    cy_offset = players[greatestind].y
+    circle_off = (cx_offset+camera_offset[0]+15, cy_offset+camera_offset[1]+15)
     # put all the graphics on the screen
     screen.blit(world,camera_offset)
+    pygame.draw.circle(screen, (0, 0, 0), (circle_off), 15, 3)
     # should be the LAST LINE of game code
     pygame.display.flip()
     fpsClock.tick(FPS)  # slow the loop down to 60 loops per second

@@ -16,6 +16,8 @@ class PlayerAI:
         self.next_act = time.time_ns() + self.delay
         self.x = self.player.x
         self.y = self.player.y
+        self.coins=self.player.coins
+
     def create_dna_sequence(self):
         # 0 - junk DNA - 80%
         # 1 - jump - 6%
@@ -76,6 +78,7 @@ class PlayerAI:
         self.x = self.player.x
         self.y = self.player.y
         self.currentAllele=0
+        self.coins=[]
 
     def set_map(self, map):
         self.player.set_map(map)

@@ -8,11 +8,12 @@ class Player:
         self.y = 400
         self.width = 30
         self.height = 30
-        self.color = (255, 0, 0)
+        self.color = (200, 200, 200)
         self.map = map
         self.isJumping = False
         self.velocity = 0;
         self.x_velocity = 0
+        self.coins=[]
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
@@ -48,7 +49,7 @@ class Player:
                 else:
                     self.velocity *= -1 / 2
                 self.isJumping = 0
-            if self.where_map_collision()== "top":
+            if self.where_map_collision()== "top" or self.where_map_collision() == "bottom":
                 self.y = oldy
                 if self.velocity < 0.1:
                     self.velocity = 0
@@ -59,6 +60,9 @@ class Player:
                 self.x_velocity=0
                 if self.velocity<0:
                     self.isJumping = 2
+            if self.coins.count(self.coin_col()) ==0:
+                self.coins.append(self.coin_col())
+
         return (self.x, self.y)
 
 
@@ -85,8 +89,8 @@ class Player:
         myHitBox = pygame.Rect(self.x, self.y, self.width, self.height)
         coins = self.map.get_coins()
         for i in range(len(coins)):
-            if coins.g(i).get_rect().colliderect(pygame.Rect(self.x, self.y, self.width, self.height)):
-                Map.remc(i)
+            if coins[i].get_rect().colliderect(pygame.Rect(self.x, self.y, self.width, self.height)):
+                return i
 
 
     def where_map_collision(self):
