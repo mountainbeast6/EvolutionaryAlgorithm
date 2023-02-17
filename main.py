@@ -4,6 +4,8 @@ from player import *
 from playerAI import *
 from random import randint
 
+
+
 def quicksort(array):
     # If the input array contains fewer than two elements,
     # then return it as the result of the function
@@ -13,7 +15,34 @@ def quicksort(array):
     low, same, high = [], [], []
 
     # Select your `pivot` element randomly
-    pivot = array[randint(0, len(array) - 1)].x
+    pivot = len(array[randint(0, len(array) - 1)].coins)
+
+    for item in array:
+        # Elements that are smaller than the `pivot` go to
+        # the `low` list. Elements that are larger than
+        # `pivot` go to the `high` list. Elements that are
+        # equal to `pivot` go to the `same` list.
+        if len(item.coins) < pivot:
+            low.append(item)
+        elif len(item.coins) == pivot:
+            same.append(item)
+        elif len(item.coins) > pivot:
+            high.append(item)
+
+    # The final result combines the sorted `low` list
+    # with the `same` list and the sorted `high` list
+    return quicksort(low) + quicksortt(same) + quicksort(high)
+# start the pygame engine
+def quicksortt(array):
+    # If the input array contains fewer than two elements,
+    # then return it as the result of the function
+    if len(array) < 2:
+        return array
+
+    low, same, high = [], [], []
+
+    # Select your `pivot` element randomly
+    pivot = (array[randint(0, len(array) - 1)].x)
 
     for item in array:
         # Elements that are smaller than the `pivot` go to
@@ -24,13 +53,13 @@ def quicksort(array):
             low.append(item)
         elif item.x == pivot:
             same.append(item)
-        elif item.x > pivot:
+        elif item.x> pivot:
             high.append(item)
 
     # The final result combines the sorted `low` list
     # with the `same` list and the sorted `high` list
     return quicksort(low) + same + quicksort(high)
-# start the pygame engine
+no_players = 300
 pygame.init()
 camera_pos = (500,500)
 circle_off =(500,500)
@@ -46,7 +75,7 @@ simOver = False
 camera_offset = (0,0)
 
 map1 = Map(-12)
-
+best=False
 # game independent variables (needed for every pygame)
 FPS = 60  # 60 Frames Per Second for the game update cycle
 fpsClock = pygame.time.Clock()  # used to lock the game to 60 FPS
@@ -58,29 +87,29 @@ def clear_screen():
 
 def makeRandomAI():
     players=[]
-    for i in range(300):
+    for i in range(no_players):
         players.append(PlayerAI(map1, None))
     return players
 players=makeRandomAI()
 def breedAI(stupid):
     stupid=quicksort(players)
-    print(stupid[0].x)
-    print(stupid[299].x)
-    for i in range(150):
+    print(len(stupid[0].coins))
+    print(len(stupid[no_players-1].coins))
+    for i in range(int(no_players/2)):
         stupid.remove(stupid[0])
 
-    for i in range(150):
+    for i in range(int(no_players/2)):
         where=random.randint(1,200)
         slcob=slice(where)
         slcob2=slice(where, 200)
         which = random.randint(1, 2)
         if which==2:
             stupid.append(PlayerAI(map1,  players[i].dna[slcob]+players[i+1].dna[slcob2]))
-            stupid[i+150].randomChange()
+            stupid[i+int(no_players/2)].randomChange()
         else:
             stupid.append(PlayerAI(map1,  players[i+1].dna[slcob]+players[i].dna[slcob2]))
-            stupid[i+150].randomChange()
-    for i in range(150):
+            stupid[i+int(no_players/2)].randomChange()
+    for i in range(int(no_players/2)):
         stupid[i].reset()
     return stupid
 color=(0,0,0)
@@ -121,6 +150,7 @@ def create_map_1():
 create_map_1()
 def update_camera():
     global camera_pos
+    global best
     if pygame.key.get_pressed()[pygame.K_RIGHT]:
         camera_pos = (camera_pos[0]+10, camera_pos[1])
     if pygame.key.get_pressed()[pygame.K_LEFT]:
@@ -129,6 +159,9 @@ def update_camera():
         camera_pos = (camera_pos[0], camera_pos[1]-10)
     if pygame.key.get_pressed()[pygame.K_DOWN]:
         camera_pos = (camera_pos[0], camera_pos[1]+10)
+    if pygame.key.get_pressed()[pygame.K_SPACE]:
+        best=(best==False)
+
 
 # main while loop
 while not simOver:
@@ -150,9 +183,17 @@ while not simOver:
         if len(players[i].coins) >greatestnum:
             greatestind=i
             greatestnum=len(players[i].coins)
+
     for p in players:
-        p.draw(world)
+        p.player.set_color((200, 200, 200))
         p.act()
+    players[greatestind].player.set_color((255,20,0))
+    if best==False:
+        for p in players:
+            p.draw(world)
+
+    else:
+        players[greatestind].draw(world)
     if players[0].currentAllele==200:
         players=breedAI(players)
         gen+=1
@@ -166,12 +207,8 @@ while not simOver:
     y_offset = 350 - camera_pos[1]
     camera_offset = (x_offset, y_offset)
     world.blit(textSurface, (50 - x_offset, 300-y_offset))
-    cx_offset = players[greatestind].x
-    cy_offset = players[greatestind].y
-    circle_off = (cx_offset+camera_offset[0]+15, cy_offset+camera_offset[1]+15)
     # put all the graphics on the screen
     screen.blit(world,camera_offset)
-    pygame.draw.circle(screen, (0, 0, 0), (circle_off), 15, 3)
     # should be the LAST LINE of game code
     pygame.display.flip()
     fpsClock.tick(FPS)  # slow the loop down to 60 loops per second

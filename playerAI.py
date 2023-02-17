@@ -17,6 +17,7 @@ class PlayerAI:
         self.x = self.player.x
         self.y = self.player.y
         self.coins=self.player.coins
+        self.bestEver=0
 
     def create_dna_sequence(self):
         # 0 - junk DNA - 80%
@@ -51,7 +52,6 @@ class PlayerAI:
                 self.dna.append(2)
             elif(choice <= 100): #move right
                 self.dna.append(3)
-
     def act(self):
         #print(str(time.time_ns()))
         if self.currentAllele<200:
@@ -79,6 +79,8 @@ class PlayerAI:
         self.y = self.player.y
         self.currentAllele=0
         self.coins=[]
+        if len(self.coins)>self.bestEver:
+            self.bestEver=len(self.coins)
 
     def set_map(self, map):
         self.player.set_map(map)

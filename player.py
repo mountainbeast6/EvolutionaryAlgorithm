@@ -17,7 +17,8 @@ class Player:
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
-
+    def set_color(self,color):
+        self.color=color
     def set_map(self, map):
         self.map = map
 
