@@ -16,22 +16,8 @@ class PlayerAI:
         self.next_act = time.time_ns() + self.delay
         self.x = self.player.x
         self.y = self.player.y
-    def create_dna_sequence(self):
-        # 0 - junk DNA - 80%
-        # 1 - jump - 6%
-        # 2 - move left - 7%
-        # 3 - move right - 7%
-
-        for i in range(200):
-            choice = random.randint(1,100)
-            if(choice <= 50): #junk
-                self.dna.append(0)
-            elif(choice <= 86): #jump
-                self.dna.append(1)
-            elif(choice <= 93): #move left
-                self.dna.append(2)
-            elif(choice <= 100): #move right
-                self.dna.append(3)
+        self.coins=self.player.coins
+        self.bestEver=0
 
     def create_dna_sequence(self):
         # 0 - junk DNA - 80%
@@ -50,6 +36,22 @@ class PlayerAI:
             elif(choice <= 100): #move right
                 self.dna.append(3)
 
+    def create_dna_sequence(self):
+        # 0 - junk DNA - 80%
+        # 1 - jump - 6%
+        # 2 - move left - 7%
+        # 3 - move right - 7%
+
+        for i in range(200):
+            choice = random.randint(1,100)
+            if(choice <= 50): #junk
+                self.dna.append(0)
+            elif(choice <= 86): #jump
+                self.dna.append(1)
+            elif(choice <= 93): #move left
+                self.dna.append(2)
+            elif(choice <= 100): #move right
+                self.dna.append(3)
     def act(self):
         #print(str(time.time_ns()))
         if self.currentAllele<200:
@@ -76,6 +78,9 @@ class PlayerAI:
         self.x = self.player.x
         self.y = self.player.y
         self.currentAllele=0
+        if len(self.coins)>self.bestEver:
+            self.bestEver=len(self.coins)
+        self.coins = []
 
     def set_map(self, map):
         self.player.set_map(map)
